@@ -87,9 +87,10 @@ def subscribe(args):
                 ('facility', 'LLDP')
                 -----
             """
-            # react to to custom syslog messages here - but it is not working???
+            # react to to custom syslog messages here
             if eventType=="SYSLOG_V2":
                 if resp.value.title.value=="new LLDP event": #this is where the provisioning takes place
+                    #grab neighbor information from upstream device = resp.value.data.data["hostname"]
                     print ("start provisioning here - YAY!")
             
             # print all others, except those 'annoying' interface errors
@@ -102,13 +103,14 @@ def subscribe(args):
                 dictionary_items = resp.value.data.data.items()
                 for item in dictionary_items:
                     print(item)
-                print("-----\n")
+
 
             # just mention those 'annoying' interface errors
             if eventType=="DEVICE_INTF_ERR_SMART" or eventType=="HIGH_INTF_OUT_DISCARDS" or eventType=="HIGH_INTF_IN_ERRS":  # do not show IFdown, Low disk, discards, errors
                 print ("interface errors")
 
-
+        print ("time is now: "+datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        print("end of event -----\n")
 
 if __name__ == '__main__':
     args ={}
