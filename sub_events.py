@@ -26,6 +26,10 @@ from arista.event.v1 import services
 RPC_TIMEOUT = 300000  # in seconds
 SEVERITIES = ["UNSPECIFIED","INFO", "WARNING", "ERROR", "CRITICAL"]
 
+def provison(resp):
+    #do nothing yet
+    print ("if it is a new unknown device: provision it")
+    return
 
 def subscribe(args):
 
@@ -50,37 +54,38 @@ def subscribe(args):
     # create a filter model
     event_filter = models.Event()
 
-    #if "events" in args.keys():
-    #    event_filter.event_type.value = args["events"]
-
-    #if "severity" in args.keys():
-        # enum with val 0 is always unset
-        #event_filter.severity = SEVERITIES.index(args["severity"]) + 1  #  event_filter.severity = 0to4
-    #event_filter.severity=1
-
     subscribe.partial_eq_filter.append(event_filter)
     
     # initialize a connection to the server using our connection settings (auth + TLS)
     with grpc.secure_channel(args["server"], connCreds) as channel:
-        event_stub = services.EventServiceStub(channel)
-        #for resp in event_stub.Subscribe(subscribe, timeout=RPC_TIMEOUT):
+        event_stub = services.EventServiceStub(channel) #i am thinking that wihtout a timeout, the session will never end
+        #for resp in event_stub.Subscribe(subscribe, timeout=RPC_TIMEOUT):  #set up with a timeout
         for resp in event_stub.Subscribe(subscribe):  #no timeout
-            #react here
+
+
             if resp.value.severity==0: # show that strange event
                 print(resp.value)
 
+            # react to to custom syslog messages here
+            if eventType=="SYSLOG_V2":
+                if resp.value.title.value=="new LLDP event": #this is where the provisioning takes place
+                    print ("provision-YAY")
+                    provisionDevice(resp)
+
+
+            # print all others, except interface errors
             eventType = resp.value.event_type.value
-            #if eventType!="DEVICE_INTF_ERR_SMART" and eventType!="LOW_DEVICE_DISK_SPACE" and eventType!="HIGH_INTF_OUT_DISCARDS" and eventType!="HIGH_INTF_IN_ERRS":  # do not show IFdown, Low disk, discards, errors
-            print ("title:"+resp.value.title.value)
-            print ("event type:"+resp.value.event_type.value)
-            print ("severity : "+str(resp.value.severity))
-            print ("description:"+resp.value.description.value)
-            print ("timestamp: "+str(resp.value.key.timestamp.seconds)+" - "+datetime.datetime.fromtimestamp(resp.value.key.timestamp.seconds).strftime('%Y-%m-%d %H:%M:%S'))
-            print ("event data:")
-            dictionary_items = resp.value.data.data.items()
-            for item in dictionary_items:
-                print(item)
-            print("-----\n")
+            if eventType!="DEVICE_INTF_ERR_SMART" and eventType!="LOW_DEVICE_DISK_SPACE" and eventType!="HIGH_INTF_OUT_DISCARDS" and eventType!="HIGH_INTF_IN_ERRS":  # do not show IFdown, Low disk, discards, errors
+                print ("title:"+resp.value.title.value)
+                print ("event type:"+resp.value.event_type.value)
+                print ("severity : "+str(resp.value.severity))
+                print ("description:"+resp.value.description.value)
+                print ("timestamp: "+str(resp.value.key.timestamp.seconds)+" - "+datetime.datetime.fromtimestamp(resp.value.key.timestamp.seconds).strftime('%Y-%m-%d %H:%M:%S'))
+                print ("event data:")
+                dictionary_items = resp.value.data.data.items()
+                for item in dictionary_items:
+                    print(item)
+                print("-----\n")
 
 
 
