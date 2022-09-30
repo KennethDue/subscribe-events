@@ -1,6 +1,3 @@
-arista token and notes.txt
-cloud-token.txt
-corp-token.txt
-cvp.corp.lego.com.crt
-L2 leaf workflow.vsdx
-www.cv-prod-euwest-2.arista.io.crt
+*.txt
+*.crt
+*.vsdx
