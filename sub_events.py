@@ -62,30 +62,50 @@ def subscribe(args):
         #for resp in event_stub.Subscribe(subscribe, timeout=RPC_TIMEOUT):  #set up with a timeout
         for resp in event_stub.Subscribe(subscribe):  #no timeout
 
+            eventType = resp.value.event_type.value
+            print ("event type: "+resp.value.event_type.value+"-")
+            
+            if resp.value.severity==0: # show that strange event with severity 0
+                print(resp)
 
-            if resp.value.severity==0: # show that strange event
-                print(resp.value)
+            # react to to custom syslog messages here - but it is not working???
+            """
+                -----
 
-            # react to to custom syslog messages here
+                title:new LLDP event -
+                event type: SYSLOG_V2-
+                severity: 1-
+                description: new LLDP event: LLDP neighbor with chassisId fcbd.6783.9765 and portId "Ethernet27" added on interface Ethernet47, NEIGHBOR_NEW, LLDP and 5-
+                timestamp: 1664525881 - 2022-09-30 10:18:01
+                event data:
+                ('severity', '5')
+                ('mnemonic', 'NEIGHBOR_NEW')
+                ('progName', 'Lldp')
+                ('deviceId', 'JPE20391653')
+                ('hostname', 'dkda7050-lab-01a')
+                ('text', 'LLDP neighbor with chassisId fcbd.6783.9765 and portId "Ethernet27" added on interface Ethernet47')
+                ('facility', 'LLDP')
+                -----
+            """
             if eventType=="SYSLOG_V2":
                 if resp.value.title.value=="new LLDP event": #this is where the provisioning takes place
-                    print ("provision-YAY")
-                    provisionDevice(resp)
-
-
-            # print all others, except interface errors
-            eventType = resp.value.event_type.value
+                    print ("provision here - YAY!")
+            
+            # print all others, except those 'annoying' interface errors
             if eventType!="DEVICE_INTF_ERR_SMART" and eventType!="LOW_DEVICE_DISK_SPACE" and eventType!="HIGH_INTF_OUT_DISCARDS" and eventType!="HIGH_INTF_IN_ERRS":  # do not show IFdown, Low disk, discards, errors
-                print ("title:"+resp.value.title.value)
-                print ("event type:"+resp.value.event_type.value)
-                print ("severity : "+str(resp.value.severity))
-                print ("description:"+resp.value.description.value)
+                print ("title:"+resp.value.title.value+"-")
+                print ("severity: "+str(resp.value.severity)+"-")
+                print ("description: "+resp.value.description.value+"-")
                 print ("timestamp: "+str(resp.value.key.timestamp.seconds)+" - "+datetime.datetime.fromtimestamp(resp.value.key.timestamp.seconds).strftime('%Y-%m-%d %H:%M:%S'))
                 print ("event data:")
                 dictionary_items = resp.value.data.data.items()
                 for item in dictionary_items:
                     print(item)
                 print("-----\n")
+
+            # just mention those 'annoying' interface errors
+            if eventType=="DEVICE_INTF_ERR_SMART" or eventType=="HIGH_INTF_OUT_DISCARDS" or eventType=="HIGH_INTF_IN_ERRS":  # do not show IFdown, Low disk, discards, errors
+                print ("interface errors")
 
 
 
