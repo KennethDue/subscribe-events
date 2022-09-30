@@ -109,8 +109,8 @@ def subscribe(args):
             if eventType=="DEVICE_INTF_ERR_SMART" or eventType=="HIGH_INTF_OUT_DISCARDS" or eventType=="HIGH_INTF_IN_ERRS":  # do not show IFdown, Low disk, discards, errors
                 print ("interface errors")
 
-        print ("time is now: "+datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-        print("end of event -----\n")
+            print ("time is now: "+datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+            print("end of event -----\n")
 
 if __name__ == '__main__':
     args ={}
