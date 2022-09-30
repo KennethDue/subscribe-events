@@ -91,14 +91,8 @@ if __name__ == '__main__':
 
     # read the file containing a session token to authenticate with
     args["server"]="www.cv-prod-euwest-2.arista.io"
-    #args["server"]="cvp.corp.lego.com"
- 
-    #cloud
     args["token"] = "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJkaWQiOjY5NTkxNjIyNjczNTUwNjM0NzUsImRzbiI6IlRlbGVtZXRyeUJyb3dzZXIiLCJkc3QiOiJhY2NvdW50IiwiZXhwIjoxNjgyNTA1Njg1LCJpYXQiOjE2NjQzNjE2OTAsInNpZCI6ImIyODQ2YTQ1Mzc2N2Q0MGQ1YWM4YTk3YzI2Yjk1MWU1ZjczZGM2ZDI5OGMyMmJiODNiM2FhNTNlY2VlMmZjNWQtN1NhMTZpdVRfWlN4WU42UWxGMW00aWpfRnJEa0FRQ2cwcXF1R09HdyJ9.1AAod5E6yFI0QIgCLJrP58BhRZ6Fjl02EGOoNMtFBnVG9TU5rZFE1zrCTtPIBJ86twVA6bZ_rFULq6Mx_b73Tg"
-    #local
-    #args["token"] = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJkaWQiOjE2NjMsImRzbiI6IlRlbGVtZXRyeUJyb3dzZXIiLCJkc3QiOiJhY2NvdW50IiwiZXhwIjoxNjk1ODc4NjE2LCJpYXQiOjE2NjQ0MjkwMjYsInNpZCI6ImIzMDczMWU2ZjVmODYyN2YxYjYyNDY0NmE5YWVjNjUyYjdiODdjYWQyZWFlZmM4YzZlYmJhODY1YTZlMWZmMDktOVNWX3FlNjZJZF9ncXdwajZtWEp6UUE2UnNIdU9Bd2dkcFlNTVQwSyJ9.e0mOWOXl_rHdK9pu0uSs1fQ8rW4pdz-iQWoQ20yiH4dYpYcn9Qhv-zUQ4rmCYw6N4aExSbkXAwfUreKM-AyaoCTcVND5y0yKM5GxrQ_-MvkPpsSVmgPYM-lNGT3xecZDAiQDkonkj86zVjTQKwVaIkjosMJdkn8Dv3d_gqmpjS-4IJG6vYDVgT07fv4OH-I1RqnECa_Qp2UyFOpTiJckiJizT_7hFI-4_RHx4xl_kzsgIyg-nfxbvsXo4CgI_ZdAMXHnl46x5Lan1jJZsp0MonvlOsUKQMs_Ce-I_PyLlE0XPEFWEq31yFd1z2umfIh4LBrHYvNYu6VTJCIwVRQQgIGcph_uVzJXleYC1M1J3IXIHb-pL47toVO1Wx0NLeu-gT-HK6nsT7H_hjPLoR5CeDgxPlLrR6Q4OchO9QzHFXdgyh6_qE-Pu1Nva5NpL3uAUAVva7TJpAckotniMPomeigLUEOHwX6CmeuDk9EnXgzCvPDX99g9uTNz-iJnQD78ZnvmjmRCq3SawMuDVcBa4JpSs0TpzdYvo4r35OLG9aYSyv_8UD-2I1_fanv_yAMs3rfWx3vuTNqoMKpNB3Y81iGtgdYQAYiwX9ppJFoS71aExafmGIPklGsi4zu0omMe-Gq9aS94qw_WMwTeiJtVmhmOYizM67oGOvaBBd30FoE"
-    
     args["cert"] = "www.cv-prod-euwest-2.arista.io.crt"
-    #args["cert"] = "cvp.corp.lego.com.crt"
+  
 
     subscribe(args)
