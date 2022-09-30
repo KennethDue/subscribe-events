@@ -1,21 +1,10 @@
-# Copyright (c) 2020 Arista Networks, Inc.
-# Use of this source code is governed by the Apache License 2.0
-# that can be found in the COPYING file.
+# subscribe to events, and listen for "SYSLOG_V2" in event.type
+# used https://github.com/aristanetworks/cloudvision-python/blob/trunk/examples/resources/event/sub_events.py as inspiration
 
-# Subscribing to CVP events
-#
-# Examples:
-# 1) Subscribe to all events
-#    python sub_events.py --server 10.83.12.79:443 --token-file token.txt \
-#    --cert-file cvp.crt
-# 2) Subscribe to only DEVICE_INTF_ERR_SMART events
-#    python sub_events.py --server 10.83.12.79:443 --token-file token.txt \
-#    --cert-file cvp.crt --event-type DEVICE_INTF_ERR_SMART
-# 3) Subscribe to events with INFO severity
-#    python sub_events.py --server 10.83.12.79:443 --token-file token.txt \
-#    --cert-file cvp.crt --severity INFO
+# the script will stop listning after a period (around 30 minutes??)
+# the question is - can i send a keep-alive, to CVaaS and keep listening indefinetly  ???
 
-import json
+
 import grpc
 import datetime
 
@@ -23,13 +12,8 @@ import datetime
 from arista.event.v1 import models
 from arista.event.v1 import services
 
-RPC_TIMEOUT = 300000  # in seconds
+#RPC_TIMEOUT = 300000  # in seconds
 SEVERITIES = ["UNSPECIFIED","INFO", "WARNING", "ERROR", "CRITICAL"]
-
-def provison(resp):
-    #do nothing yet
-    print ("if it is a new unknown device: provision it")
-    return
 
 def subscribe(args):
 
@@ -59,8 +43,9 @@ def subscribe(args):
     # initialize a connection to the server using our connection settings (auth + TLS)
     with grpc.secure_channel(args["server"], connCreds) as channel:
         event_stub = services.EventServiceStub(channel) #i am thinking that wihtout a timeout, the session will never end
-        #for resp in event_stub.Subscribe(subscribe, timeout=RPC_TIMEOUT):  #set up with a timeout
-        for resp in event_stub.Subscribe(subscribe):  #no timeout
+
+        #for resp in event_stub.Subscribe(subscribe, timeout=RPC_TIMEOUT):  
+        for resp in event_stub.Subscribe(subscribe):  #<---------- this is the timeout
 
             eventType = resp.value.event_type.value
             print ("event type: "+resp.value.event_type.value)
@@ -68,30 +53,11 @@ def subscribe(args):
             if resp.value.severity==0: # show that strange event with severity 0
                 print(resp)
 
-            """
-               the format of the custom syslog message
-                -----
-
-                title:new LLDP event
-                event type: SYSLOG_V2
-                severity: 1
-                description: new LLDP event: LLDP neighbor with chassisId fcbd.6783.9765 and portId "Ethernet27" added on interface Ethernet47, NEIGHBOR_NEW, LLDP and 5
-                timestamp: 1664525881 - 2022-09-30 10:18:01
-                event data:
-                ('severity', '5')
-                ('mnemonic', 'NEIGHBOR_NEW')
-                ('progName', 'Lldp')
-                ('deviceId', 'JPE20391653')
-                ('hostname', 'dkda7050-lab-01a')
-                ('text', 'LLDP neighbor with chassisId fcbd.6783.9765 and portId "Ethernet27" added on interface Ethernet47')
-                ('facility', 'LLDP')
-                -----
-            """
             # react to to custom syslog messages here
             if eventType=="SYSLOG_V2":
                 if resp.value.title.value=="new LLDP event": #this is where the provisioning takes place
                     #grab neighbor information from upstream device = resp.value.data.data["hostname"]
-                    print ("start provisioning here - YAY!")
+                    print ("start provisioning here!")
             
             # print all others, except those 'annoying' interface errors
             if eventType!="DEVICE_INTF_ERR_SMART" and eventType!="LOW_DEVICE_DISK_SPACE" and eventType!="HIGH_INTF_OUT_DISCARDS" and eventType!="HIGH_INTF_IN_ERRS":  # do not show IFdown, Low disk, discards, errors
@@ -103,7 +69,6 @@ def subscribe(args):
                 dictionary_items = resp.value.data.data.items()
                 for item in dictionary_items:
                     print(item)
-
 
             # just mention those 'annoying' interface errors
             if eventType=="DEVICE_INTF_ERR_SMART" or eventType=="HIGH_INTF_OUT_DISCARDS" or eventType=="HIGH_INTF_IN_ERRS":  # do not show IFdown, Low disk, discards, errors
@@ -119,8 +84,8 @@ if __name__ == '__main__':
 
     # read the file containing a session token to authenticate with
     args["server"]="www.cv-prod-euwest-2.arista.io"
-    args["token"] = "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJkaWQiOjY5NTkxNjIyNjczNTUwNjM0NzUsImRzbiI6IlRlbGVtZXRyeUJyb3dzZXIiLCJkc3QiOiJhY2NvdW50IiwiZXhwIjoxNjgyNTA1Njg1LCJpYXQiOjE2NjQzNjE2OTAsInNpZCI6ImIyODQ2YTQ1Mzc2N2Q0MGQ1YWM4YTk3YzI2Yjk1MWU1ZjczZGM2ZDI5OGMyMmJiODNiM2FhNTNlY2VlMmZjNWQtN1NhMTZpdVRfWlN4WU42UWxGMW00aWpfRnJEa0FRQ2cwcXF1R09HdyJ9.1AAod5E6yFI0QIgCLJrP58BhRZ6Fjl02EGOoNMtFBnVG9TU5rZFE1zrCTtPIBJ86twVA6bZ_rFULq6Mx_b73Tg"
-    args["cert"] = "www.cv-prod-euwest-2.arista.io.crt"
+    args["token"] = "xxxxx"
+    args["cert"] = "xxxx.crt"
   
 
     subscribe(args)
