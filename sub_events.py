@@ -4,6 +4,7 @@
 # the script will stop listning after a period (around 30 minutes??)
 # the question is - can i send a keep-alive, to CVaaS and keep listening indefinetly  ???
 
+# timeout can be set in line 45
 
 import grpc
 import datetime
